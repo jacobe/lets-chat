@@ -9,11 +9,11 @@ def run():
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = chat_pb2_grpc.ChatStub(channel)
 
-        name = input("Enter your name")
-        password = input("Enter your password")
+        name = "Jacob" #input("Enter your name")
+        password = "123" # input("Enter your password")
         response = stub.Login(chat_pb2.LoginRequest(password=password, name=name))
-        print("Login request received: " + str(response))
         session_id = str(response.token)
+        print("Login request received: " + session_id)
 
         def shutdown(signum, frame):
             print("Logging out...")
@@ -21,14 +21,17 @@ def run():
             exit(0)
         signal.signal(signal.SIGINT, shutdown)
 
-        for response in stub.Stream(repl()):
-            print(response.message)
+        for response in stub.Stream(repl(session_id)):
+            if response.client_message is not None:
+                print(f"\n{response.client_message.name} > {response.client_message.message}")
 
 
-def repl():
+def repl(session_id):
     while (True):
         line = input("> ")
-        yield chat_pb2.StreamRequest(message=line)
+        yield chat_pb2.StreamRequest(
+            message=line,
+            metadata={'x-chat-token': session_id})
 
 
 if __name__ == "__main__":

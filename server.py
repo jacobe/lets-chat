@@ -40,13 +40,18 @@ class Chat(chat_pb2_grpc.ChatServicer):
 
     def Stream(self, request_iterator, context):
         for request in request_iterator:
+            metadata = dict(request.invocation_metadata())
+            authorize(metadata.get('x-chat-token'), context)
+
             print(request.message)
             timestamp = Timestamp()
             timestamp.GetCurrentTime()
             response = chat_pb2.StreamResponse(
-                timestamp=timestamp)
-            response.client_message.name = "tester",
-            response.client_message.message = str(request.message)
+                timestamp=timestamp,
+                client_message = chat_pb2.StreamResponse.Message(
+                    name = "tester",
+                    message = str(request.message))
+                )
             yield response
 
 
@@ -58,7 +63,7 @@ class Chat(chat_pb2_grpc.ChatServicer):
 
 
 def authorize(token, context):
-    if token not in sessions:
+    if not token or token not in sessions:
         context.set_code(grpc.StatusCode.UNAUTHENTICATED)
         context.set_details("Bad token")
         raise ValueError("Unauthenticated")
