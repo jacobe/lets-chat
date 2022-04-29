@@ -36,6 +36,12 @@ class Chat(chat_pb2_grpc.ChatServicer):
         sessions[session_id] = name
         return chat_pb2.LoginResponse(message=session_id)
 
+    def Stream(self, request, context):
+        pass
+
+    def Logout(self, request, context):
+        pass
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
