@@ -21,9 +21,14 @@ def run():
             exit(0)
         signal.signal(signal.SIGINT, shutdown)
 
-        while (True):
-            line = input("> ")
-            # TODO: Send message over stream
+        for response in stub.Stream(repl()):
+            print(response.message)
+
+
+def repl():
+    while (True):
+        line = input("> ")
+        yield chat_pb2.StreamRequest(message=line)
 
 
 if __name__ == "__main__":

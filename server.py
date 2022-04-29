@@ -14,7 +14,9 @@
 """The Python implementation of the GRPC helloworld.Greeter server."""
 
 from concurrent import futures
+from datetime import datetime
 import logging
+from google.protobuf.timestamp_pb2 import Timestamp
 import uuid
 
 import grpc
@@ -36,8 +38,17 @@ class Chat(chat_pb2_grpc.ChatServicer):
         sessions[session_id] = name
         return chat_pb2.LoginResponse(token=session_id)
 
-    def Stream(self, request, context):
-        pass
+    def Stream(self, request_iterator, context):
+        for request in request_iterator:
+            print(request.message)
+            timestamp = Timestamp()
+            timestamp.GetCurrentTime()
+            response = chat_pb2.StreamResponse(
+                timestamp=timestamp)
+            response.client_message.name = "tester",
+            response.client_message.message = str(request.message)
+            yield response
+
 
     def Logout(self, request, context):
         session_id = request.token
