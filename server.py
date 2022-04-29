@@ -30,11 +30,11 @@ class Chat(chat_pb2_grpc.ChatServicer):
         if request.password != password:
             context.set_code(grpc.StatusCode.UNIMPLEMENTED)
             context.set_details("Method not implemented!")
-            return chat_pb2.LoginResponse(message="Wrong password")
-        session_id = uuid.uuid4()
+            raise ValueError
+        session_id = str(uuid.uuid4())
         name = request.name
         sessions[session_id] = name
-        return chat_pb2.LoginResponse(message=session_id)
+        return chat_pb2.LoginResponse(token=session_id)
 
     def Stream(self, request, context):
         pass

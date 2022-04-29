@@ -9,8 +9,8 @@ def run():
         stub = chat_pb2_grpc.ChatStub(channel)
         name = input("Enter your name")
         password = input("Enter your password")
-        response = stub.Login(chat_pb2.LoginRequest(name=name, password=password))
-        print("Login request received: " + response)
+        response = stub.Login(chat_pb2.LoginRequest(password=password, name=name))
+        print("Login request received: " + str(response))
 
 
 if __name__ == "__main__":
