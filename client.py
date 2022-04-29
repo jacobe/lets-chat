@@ -29,9 +29,8 @@ def run():
 def repl(session_id):
     while (True):
         line = input("> ")
-        yield chat_pb2.StreamRequest(
-            message=line,
-            metadata={'x-chat-token': session_id})
+        yield chat_pb2.StreamRequest(message=line)
+        # metadata={'x-chat-token': session_id}
 
 
 if __name__ == "__main__":
