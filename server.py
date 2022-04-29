@@ -28,9 +28,9 @@ sessions = dict()
 class Chat(chat_pb2_grpc.ChatServicer):
     def Login(self, request, context):
         if request.password != password:
-            context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-            context.set_details("Method not implemented!")
-            raise ValueError
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Bad password")
+            raise ValueError("Bad password")
         session_id = str(uuid.uuid4())
         name = request.name
         sessions[session_id] = name
