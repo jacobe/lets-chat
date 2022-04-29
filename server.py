@@ -27,10 +27,14 @@ tokens = dict()
 
 class Chat(chat_pb2_grpc.ChatServicer):
     def Login(self, request, context):
+        if request.password != password:
+            context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+            context.set_details("Method not implemented!")
+            return chat_pb2.LoginResponse(message="Wrong password")
         token = uuid.uuid4()
         name = request.name
         tokens[token] = name
-        return chat_pb2.Login(message=token)
+        return chat_pb2.LoginResponse(message=token)
 
 
 def serve():
