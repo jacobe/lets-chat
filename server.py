@@ -40,7 +40,17 @@ class Chat(chat_pb2_grpc.ChatServicer):
         pass
 
     def Logout(self, request, context):
-        pass
+        session_id = request.token
+        authorize(session_id, context)
+        del sessions[session_id]
+        return chat_pb2.LogoutResponse()
+
+
+def authorize(token, context):
+    if token not in sessions:
+        context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+        context.set_details("Bad token")
+        raise ValueError("Unauthenticated")
 
 
 def serve():
