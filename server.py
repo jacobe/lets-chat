@@ -22,7 +22,7 @@ import chat_pb2
 import chat_pb2_grpc
 
 password = "123"
-tokens = dict()
+sessions = dict()
 
 
 class Chat(chat_pb2_grpc.ChatServicer):
@@ -31,10 +31,10 @@ class Chat(chat_pb2_grpc.ChatServicer):
             context.set_code(grpc.StatusCode.UNIMPLEMENTED)
             context.set_details("Method not implemented!")
             return chat_pb2.LoginResponse(message="Wrong password")
-        token = uuid.uuid4()
+        session_id = uuid.uuid4()
         name = request.name
-        tokens[token] = name
-        return chat_pb2.LoginResponse(message=token)
+        sessions[session_id] = name
+        return chat_pb2.LoginResponse(message=session_id)
 
 
 def serve():
